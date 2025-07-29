@@ -40,14 +40,14 @@ The script will display your estimated productivity score and a message.
 ## Example
 
 ```markdown
-Estimate your productivity based on sleep and caffeine ☕
+☕🔋Estimate your productivity based on sleep and caffeine 🔋☕
 
-Hours you slept last night: 7
-Sleep quality (1-10): 8
-Total caffeine you drank (in mg): 150
-Hours since you had caffeine: 2
-Current hour (24h format, optional, press Enter to use current hour):
+ || Caffeine reference values (mg):
+ || 1 cup coffee ☕= 95 mg
+ || 1 energy drink 🔋= 80 mg
+ || 1 cup tea 🍵= 47 mg
+ || 1 can cola 🥤= 20 mg
 
-🔋 Estimated Productivity Score: 78.2/100
-⚡ Productive window open. Ride the wave!
+Enter your caffeine intake below. You can enter the number of drinks or total mg.
+
 ```
