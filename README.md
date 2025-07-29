@@ -1,5 +1,15 @@
 # EnergySync
 
+
+```plaintext
+______ _   _ ______ _____   _______     _________     ___   _  _____ 
+|  ____| \ | |  ____|  __ \ / ____| \   / / ____| |   / / \ | |/ ____|
+| |__  |  \| | |__  | |__| | |  __ \ \_/ / (___  \ \_/ /|  \| | |     
+|  __| | . ` |  __| |  _  /| | |_ | \   / \___ \  \   / | . ` | |     
+| |____| |\  | |____| | \ \| |__| |  | |  ____) |  | |  | |\  | |____ 
+|______|_| \_|______|_|  \_|\_____|  |_| |_____/   |_|  |_| \_|\_____|
+```
+
 **EnergySync** is a simple Python tool that estimates your productivity score based on your sleep, caffeine intake, and the time of day. It uses a basic model of circadian rhythms and caffeine metabolism to help you understand when you might be most productive.
 
 ## Features
