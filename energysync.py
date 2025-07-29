@@ -39,21 +39,27 @@ def productivity_mood(score):
         return "🌙 Low energy. Consider resting or minimizing distractions."
 
 def main():
-    parser = argparse.ArgumentParser(description="Estimate your productivity based on sleep and caffeine ☕")
-    parser.add_argument("--sleep-hours", type=float, required=True, help="Hours you slept last night")
-    parser.add_argument("--sleep-quality", type=int, required=True, help="Sleep quality (1-10)")
-    parser.add_argument("--caffeine-mg", type=int, required=True, help="Total caffeine you drank (in mg)")
-    parser.add_argument("--hours-since-caffeine", type=float, required=True, help="Hours since you had caffeine")
-    parser.add_argument("--hour", type=int, help="Current hour (24h format, optional)")
-
-    args = parser.parse_args()
-    hour_of_day = args.hour if args.hour is not None else datetime.datetime.now().hour
+    print("Estimate your productivity based on sleep and caffeine ☕\n")
+    while True:
+        try:
+            sleep_hours = float(input("Hours you slept last night: "))
+            sleep_quality = int(input("Sleep quality (1-10): "))
+            caffeine_mg = int(input("Total caffeine you drank (in mg): "))
+            hours_since_caffeine = float(input("Hours since you had caffeine: "))
+            hour_input = input("Current hour (24h format, optional, press Enter to use current hour): ")
+            if hour_input.strip() == "":
+                hour_of_day = datetime.datetime.now().hour
+            else:
+                hour_of_day = int(hour_input)
+            break
+        except ValueError:
+            print("Invalid input. Please enter the values again.\n")
 
     score = productivity_score(
-        args.sleep_hours,
-        args.sleep_quality,
-        args.caffeine_mg,
-        args.hours_since_caffeine,
+        sleep_hours,
+        sleep_quality,
+        caffeine_mg,
+        hours_since_caffeine,
         hour_of_day
     )
 
