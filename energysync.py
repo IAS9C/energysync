@@ -85,13 +85,22 @@ def caffeine_effect_level(caffeine_mg, hours_since_intake, target_hour=22, curre
     return effect, hours_until_wearoff
 
 def main():
-    print("-----ENERGYSYNC-----\n")
+    print(r"""
+          
+    ______ _   _ ______ _____   _______     _________     ___   _  _____ 
+    |  ____| \ | |  ____|  __ \ / ____| \   / / ____| |   / / \ | |/ ____|
+    | |__  |  \| | |__  | |__| | |  __ \ \_/ / (___  \ \_/ /|  \| | |     
+    |  __| | . ` |  __| |  _  /| | |_ | \   / \___ \  \   / | . ` | |     
+    | |____| |\  | |____| | \ \| |__| |  | |  ____) |  | |  | |\  | |____ 
+    |______|_| \_|______|_|  \_|\_____|  |_| |_____/   |_|  |_| \_|\_____|
+                                                                        
+    """)
     print("☕🔋Estimate your productivity based on sleep and caffeine 🔋☕\n")
-    print("Caffeine reference values (mg):")
-    print(f"  1 cup coffee = {coffee} mg")
-    print(f"  1 energy drink = {energy_drink} mg")
-    print(f"  1 cup tea = {tea} mg")
-    print(f"  1 can cola = {cola} mg\n")
+    print(" || Caffeine reference values (mg):")
+    print(f" || 1 cup coffee ☕= {coffee} mg")
+    print(f" || 1 energy drink 🔋= {energy_drink} mg")
+    print(f" || 1 cup tea 🍵= {tea} mg")
+    print(f" || 1 can cola 🥤= {cola} mg\n")
     while True:
         try:
             print("Enter your caffeine intake below. You can enter the number of drinks or total mg.\n")
