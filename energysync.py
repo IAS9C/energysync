@@ -137,7 +137,7 @@ def main():
         total_caffeine, hours_since_caffeine, target_hour=22, current_hour=hour_of_day
     )
     if effect != "none":
-        print(f"\n⚠️  WARNING: At 22:00, caffeine in your system will likely have a {effect} effect.")
+        print(f"\n🔺WARNING: At 22:00, caffeine in your system will likely have a {effect} effect.")
     else:
         print("\n✅ By 22:00, caffeine should have little to no effect.")
 
