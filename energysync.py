@@ -1,9 +1,12 @@
 import datetime
 import math
 import argparse
+import sys
+import time
 
 # Constants
 CAFFEINE_HALFLIFE_HOURS = 5
+ELIMINATION_CONSTANT = math.log(2) / CAFFEINE_HALFLIFE_HOURS
 MAX_SCORE = 100
 
 # Variables
@@ -14,7 +17,12 @@ cola = 20  # mg of caffeine in a typical can of cola
 
 # Calculate remaining caffeine based on intake time
 def caffeine_remaining(caffeine_mg, hours_since_intake):
-    return caffeine_mg * (0.5 ** (hours_since_intake / CAFFEINE_HALFLIFE_HOURS))
+    """Return remaining caffeine using a first-order elimination model."""
+    if caffeine_mg <= 0:
+        return 0.0
+    if hours_since_intake <= 0:
+        return float(caffeine_mg)
+    return caffeine_mg * math.exp(-ELIMINATION_CONSTANT * hours_since_intake)
 
 def productivity_score(sleep_hours, sleep_quality, caffeine_mg, hours_since_caffeine, hour_of_day):
     # Circadian rhythm: peak hours between 9-12 & 15-17
@@ -45,10 +53,16 @@ def productivity_mood(score):
         return "🌙 Low energy. Consider resting or minimizing distractions."
 
 def caffeine_effect_level(caffeine_mg, hours_since_intake, target_hour=22, current_hour=None):
-    """
-    Returns a tuple: (effect_level, hours_until_wearoff)
-    effect_level: "none", "small", "mild", "heavy"
-    hours_until_wearoff: estimated hours until caffeine < 10mg
+    """Estimate how caffeine will feel later and when it will mostly wear off.
+
+    Returns a tuple ``(effect_level, hours_until_wearoff, caffeine_projection)`` where:
+
+    * ``effect_level`` is one of ``"none"``, ``"small"``, ``"mild"``, ``"heavy"``.
+    * ``hours_until_wearoff`` is the estimated time (from *now*) until the remaining
+      caffeine dips below ``10`` mg.
+    * ``caffeine_projection`` contains the estimated caffeine at the target hour and
+      the time until it falls below ``40`` mg (often associated with minimal alertness
+      effects).
     """
     if current_hour is None:
         now = datetime.datetime.now()
@@ -60,29 +74,49 @@ def caffeine_effect_level(caffeine_mg, hours_since_intake, target_hour=22, curre
     else:
         hours_to_22 = 24 - (current_hour - target_hour)
 
-    caffeine_at_22 = caffeine_remaining(caffeine_mg, hours_since_intake + hours_to_22)
+    caffeine_at_target = caffeine_remaining(
+        caffeine_mg, hours_since_intake + hours_to_22
+    )
 
-    # Determine effect level at 22h
-    if caffeine_at_22 >= 100:
+    # Determine effect level at the target hour based on researched alertness ranges
+    if caffeine_at_target >= 200:
         effect = "heavy"
-    elif caffeine_at_22 >= 40:
+    elif caffeine_at_target >= 100:
         effect = "mild"
-    elif caffeine_at_22 >= 15:
+    elif caffeine_at_target >= 40:
         effect = "small"
     else:
         effect = "none"
 
-    # Estimate when caffeine drops below 10mg
-    if caffeine_mg <= 0:
-        hours_until_wearoff = 0
-    else:
-        try:
-            hours_until_wearoff = math.log(10 / caffeine_mg, 0.5) * CAFFEINE_HALFLIFE_HOURS
-            hours_until_wearoff = max(0, hours_until_wearoff - hours_since_intake)
-        except ValueError:
-            hours_until_wearoff = 0
+    # Estimate when caffeine drops below common alertness thresholds
+    def time_until_threshold(threshold_mg):
+        if caffeine_mg <= threshold_mg or threshold_mg <= 0:
+            return 0.0
+        total_hours = math.log(caffeine_mg / threshold_mg) / ELIMINATION_CONSTANT
+        return max(0.0, total_hours - hours_since_intake)
 
-    return effect, hours_until_wearoff
+    hours_until_wearoff = time_until_threshold(10)
+    hours_until_light_effect = time_until_threshold(40)
+
+    projection = {
+        "caffeine_at_target": caffeine_at_target,
+        "hours_until_light_effect": hours_until_light_effect,
+    }
+
+    return effect, hours_until_wearoff, projection
+
+def animate_analysis(steps, spin_interval=0.1, step_delay=0.2):
+    """Show a playful spinner animation while "performing" analysis steps."""
+    spinner_frames = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+    for step in steps:
+        for frame in spinner_frames:
+            sys.stdout.write(f"\r{frame} {step}...")
+            sys.stdout.flush()
+            time.sleep(spin_interval)
+        sys.stdout.write(f"\r✅ {step} complete!\n")
+        sys.stdout.flush()
+        time.sleep(step_delay)
+    print()
 
 def main():
     print(r"""
@@ -130,6 +164,12 @@ def main():
         except ValueError:
             print("Invalid input. Please enter the values again.\n")
 
+    animate_analysis([
+        "Calibrating circadian rhythm patterns",
+        "Projecting caffeine metabolism curves",
+        "Scoring productivity potential",
+    ])
+
     score = productivity_score(
         sleep_hours,
         sleep_quality,
@@ -142,7 +182,7 @@ def main():
     print(productivity_mood(score))
 
     # Caffeine warning for 22h
-    effect, hours_until_wearoff = caffeine_effect_level(
+    effect, hours_until_wearoff, projection = caffeine_effect_level(
         total_caffeine, hours_since_caffeine, target_hour=22, current_hour=hour_of_day
     )
     if effect != "none":
@@ -155,6 +195,17 @@ def main():
         print(f"☕ Caffeine should wear off in about {hours_until_wearoff:.1f} hours (around {wearoff_time.strftime('%H:%M')}).")
     else:
         print("☕ Caffeine is already mostly out of your system.")
+
+    hours_until_light = projection["hours_until_light_effect"]
+    caffeine_at_target = projection["caffeine_at_target"]
+    print(
+        f"📉 Expected caffeine at 22:00: {caffeine_at_target:.1f} mg."
+        + (
+            f" Light alertness should fade in ~{hours_until_light:.1f} hours."
+            if hours_until_light > 0
+            else ""
+        )
+    )
 
 if __name__ == "__main__":
     main()
